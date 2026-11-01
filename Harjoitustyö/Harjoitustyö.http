@@ -1,0 +1,60 @@
+@Harjoitustyö_HostAddress = http://localhost:5226
+
+### Rekisteröidy (ei vaadi kirjautumista)
+POST {{Harjoitustyö_HostAddress}}/api/users
+Content-Type: application/json
+
+{
+  "userName": "matti",
+  "password": "salasana1",
+  "firstName": "Matti",
+  "lastName": "Meikäläinen"
+}
+
+### Omat tiedot (Basic = base64("matti:salasana1"))
+GET {{Harjoitustyö_HostAddress}}/api/users/me
+Authorization: Basic bWF0dGk6c2FsYXNhbmEx
+
+### Julkinen viesti
+POST {{Harjoitustyö_HostAddress}}/api/messages
+Authorization: Basic bWF0dGk6c2FsYXNhbmEx
+Content-Type: application/json
+
+{
+  "title": "Hei kaikki",
+  "body": "Tämä on julkinen viesti"
+}
+
+### Yksityisviesti, joka on vastaus viestiin 1
+POST {{Harjoitustyö_HostAddress}}/api/messages
+Authorization: Basic bWF0dGk6c2FsYXNhbmEx
+Content-Type: application/json
+
+{
+  "title": "Re: Hei kaikki",
+  "body": "Tämän näkee vain vastaanottaja",
+  "recipient": "liisa",
+  "previousMessageId": 1
+}
+
+### Uusimmat julkiset viestit
+GET {{Harjoitustyö_HostAddress}}/api/messages?count=10
+Authorization: Basic bWF0dGk6c2FsYXNhbmEx
+
+### Saapuneet yksityisviestit
+GET {{Harjoitustyö_HostAddress}}/api/messages/inbox
+Authorization: Basic bWF0dGk6c2FsYXNhbmEx
+
+### Muokkaa omaa viestiä
+PUT {{Harjoitustyö_HostAddress}}/api/messages/1
+Authorization: Basic bWF0dGk6c2FsYXNhbmEx
+Content-Type: application/json
+
+{
+  "title": "Hei kaikki (muokattu)",
+  "body": "Muokattu sisältö"
+}
+
+### Poista oma viesti
+DELETE {{Harjoitustyö_HostAddress}}/api/messages/1
+Authorization: Basic bWF0dGk6c2FsYXNhbmEx
