@@ -2,8 +2,6 @@
 
 ASP.NET Core Web API (.NET 10) + Entity Framework Core + SQLite. Käyttäjät voivat lähettää julkisia ja yksityisiä viestejä.
 
-Käynnistys: `dotnet run --project Harjoitustyö`, Swagger UI osoitteessa `/swagger`. Tietokanta luodaan automaattisesti.
-
 ## Rakenne
 
 ```
@@ -15,9 +13,9 @@ Models/         Entiteetit (User, Message) ja DTO:t
 Middleware/     Basic-autentikointi
 ```
 
-Jokaisella kerroksella on yksi vastuu: kontrolleri ei tiedä tietokannasta, palvelu ei tiedä HTTP:stä ja repositorio ei sisällä sääntöjä. Kerrokset käyttävät toisiaan rajapintojen kautta, ja toteutukset injektoidaan `Program.cs`:ssä.
+Jokaisella kerroksella on yksi vastuu: kontrolleri ei tiedä tietokannasta, palvelu ei tiedä HTTPstä ja repositorio ei sisällä sääntöjä. Kerrokset käyttävät toisiaan rajapintojen kautta, ja toteutukset injektoidaan `Program.cs`ssä.
 
-Salasanasta tallennetaan vain PBKDF2-tiiviste ja suola. Rajapinnan yli liikkuvat vain DTO:t, joten tiiviste ei koskaan päädy vastaukseen.
+Salasanasta tallennetaan vain PBKDF2 tiiviste ja suola. Rajapinnan yli liikkuvat vain DTOt joten tiiviste ei koskaan päädy vastaukseen.
 
 ## Rajapinnat
 
@@ -32,7 +30,7 @@ Salasanasta tallennetaan vain PBKDF2-tiiviste ja suola. Rajapinnan yli liikkuvat
 | POST | `/api/messages` | Uusi viesti |
 | PUT / DELETE | `/api/messages/{id}` | Oman viestin muokkaus / poisto |
 
-Viesti on yksityinen, jos sillä on vastaanottaja; muuten se on julkinen. Yksityisen viestin näkevät vain lähettäjä ja vastaanottaja. Toisten viestejä ja profiileja ei voi muokata (403).
+Viesti on yksityinen jos sillä on vastaanottaja; muuten se on julkinen. Yksityisen viestin näkevät vain lähettäjä ja vastaanottaja. Toisten viestejä ja profiileja ei voi muokata (403).
 
 ## Käyttö
 
@@ -46,12 +44,12 @@ Viesti on yksityinen, jos sillä on vastaanottaja; muuten se on julkinen. Yksity
    POST /api/messages
    { "title": "Hei", "body": "Vain Liisalle", "recipient": "liisa", "previousMessageId": 1 }
    ```
-   Ilman `recipient`-kenttää viesti on julkinen. `previousMessageId` kertoo, mihin viestiin tämä on vastaus.
+   Ilman `recipient`-kenttää viesti on julkinen. `previousMessageId` kertoo mihin viestiin tämä on vastaus.
 
 ## Esimerkki: viestin lähetys
 
-1. **BasicAuthenticationHandler** purkaa Authorization-otsakkeen. `UserAuthenticationService` vertaa salasanan tiivistettä tietokannassa olevaan. Jos ne eivät täsmää, vastaus on 401.
-2. **MessagesController** saa `CreateMessageDTO`:n. Lähettäjä otetaan kirjautuneesta käyttäjästä, ei pyynnöstä.
+1. **BasicAuthenticationHandler** purkaa Authorization otsakkeen. `UserAuthenticationService` vertaa salasanan tiivistettä tietokannassa olevaan. Jos ne eivät täsmää, vastaus on 401.
+2. **MessagesController** saa `CreateMessageDTO`n. Lähettäjä otetaan kirjautuneesta käyttäjästä, ei pyynnöstä.
 3. **MessageService** tarkistaa, että vastaanottaja on olemassa ja että edellinen viesti on lähettäjän nähtävissä. Sen jälkeen se luo `Message`-olion.
 4. **MessageRepository** tallentaa viestin EF Corella tietokantaan.
 5. Kontrolleri palauttaa `201 Created` ja `MessageDTO`:n.
